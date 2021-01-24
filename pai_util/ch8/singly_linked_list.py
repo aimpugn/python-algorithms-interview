@@ -21,3 +21,15 @@ def get_test_node(case_list: list) -> ListNode:
             node_next = node_curr
     
     return node_curr
+
+def print_list_node(head: ListNode):
+    while True:
+        if head:
+            print(head.val)
+            if head.next:
+                head = head.next
+            else:
+                break
+        else:
+            print([])
+            break

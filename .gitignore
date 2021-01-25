@@ -1,0 +1,4 @@
+# https://twpower.github.io/9-remove-gitignore-cache
+# git rm --cached .\ch8\__pycache__\ -r
+./ch8/__pycache__/*
+*.pyc

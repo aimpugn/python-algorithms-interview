@@ -144,6 +144,90 @@ class Solution:
         return ans
 
     def third(self, s: str) -> str:
+        print(s)
+        ans = ''
+        s_len = len(s)
+        # 문자열이 1개면 굳이 아래 로직 따를 필요 없다
+        if s_len == 1:
+            return s
+
+        palindrome_len = 0
+        loop_cnt = 0
+        # 중앙을 기점으로 하지 말고 제일 앞에서부터 끝까지 모두 훑어보자
+        """
+        abcddce가 있으면
+        a -> False
+        b 
+            -> abc -> False
+            -> bc -> False
+        c 
+            -> bcd -> False
+            -> cd -> False
+        d 
+            -> cdb -> False
+            -> db -> True -> cddc -> True -> bcddce -> while문 벗어남
+
+        """
+        target = s[loop_cnt]
+        while loop_cnt < s_len:
+            # 초기값 설정. 이걸 하지 않으면 아래에서 `ac` 같은 경우 빈 값으로 나온다
+            if palindrome_len == 0 and loop_cnt == 0:
+                ans = target
+
+            # 20210408: 이전에는 당연했던 코드가 오늘은 생소하다. fourth에서 개선
+            # 홀수개인 경우를 훑어 본다
+            idx_left = loop_cnt - 1
+            idx_right = loop_cnt + 1
+            is_palindrome = False
+            while idx_left >= 0 and idx_right < s_len:
+                print("1. s[{}]: {}, s[{}]: {}".format(idx_left, s[idx_left], idx_right, s[idx_right]))
+                if s[idx_left] == s[idx_right]:
+                    is_palindrome = True
+                    idx_left -= 1
+                    idx_right += 1
+                else:
+                    break
+            print('1. is_palindrome: {}'.format(is_palindrome))
+            if is_palindrome:
+                tmp_len = idx_right - idx_left + 1
+                if palindrome_len < tmp_len:
+                    palindrome_len = tmp_len
+                    # while문 안에서 is_palindrome 체크하고 left 및 right로 이동하므로, 
+                    # break된 후에는 각각 이전 포인터를 인덱스로 삼아야 한다
+                    ans = s[idx_left + 1:idx_right]
+                    print('1. s[{}:{}] = ans: {}'.format(idx_left + 1, idx_right, ans))
+
+            # 짝수개인 경우를 훑어 본다
+            idx_left = loop_cnt
+            idx_right = loop_cnt + 1
+            is_palindrome = False
+            while idx_left >= 0 and idx_right < s_len:
+                print("2. s[{}]: {}, s[{}]: {}".format(idx_left, s[idx_left], idx_right, s[idx_right]))
+                if s[idx_left] == s[idx_right]:
+                    is_palindrome = True
+                    idx_left -= 1
+                    idx_right += 1
+                else:
+                    break
+            
+            print('2. is_palindrome: {}'.format(is_palindrome))
+            if is_palindrome:
+                tmp_len = idx_right - idx_left + 1
+                if palindrome_len < tmp_len:
+                    palindrome_len = tmp_len
+                    ans = s[idx_left + 1:idx_right]
+                    print('2. s[{}:{}] = ans: {}'.format(idx_left + 1, idx_right, ans))
+
+            loop_cnt += 1
+            if loop_cnt < s_len:
+                target = s[loop_cnt]
+                print("target = s[{}]: {}".format(loop_cnt, target))
+            else:
+                break
+
+        return ans
+
+    def fourth(self, s: str) -> str:
         ans = ''
         s_len = len(s)
         # 문자열이 1개면 굳이 아래 로직 따를 필요 없다
@@ -159,6 +243,7 @@ class Solution:
             if palindrome_len == 0 and loop_cnt == 0:
                 ans = target
 
+            # 20210408: 이전에는 당연했던 코드가 오늘은 생소하다. fourth에서 개선
             idx_left = loop_cnt - 1
             idx_right = loop_cnt + 1
             is_palindrome = False
@@ -217,7 +302,8 @@ test_cases = [
     {'case': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabcaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'extected': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'},
 ]
 
-print(s.third('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabcaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'))
+print(s.third('xaabacxcabaaxcabaax'))
+# print(s.third('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabcaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'))
 
 
 
